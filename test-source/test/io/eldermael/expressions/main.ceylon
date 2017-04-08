@@ -3,6 +3,6 @@ import ceylon.test {
 }
 
 test
-shared void main() {
-    assert(1 == 1);
+shared void shouldExitIf() {
+    assert (1 == 1);
 }

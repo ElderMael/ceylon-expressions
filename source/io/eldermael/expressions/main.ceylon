@@ -71,35 +71,44 @@ Integer evaluateFile(File file) {
     print(file.path.absolutePath.uriString);
 
 
-    value expressions = lines(file)
+    value fileLines = lines(file);
+
+    "File must contain expressions"
+    assert (nonempty fileLines);
+
+    value equations = fileLines
         .map((line) => line.split())
         .map((lexicalUnits) => lexicalUnits.map(Token.asToken));
 
-    print(expressions);
+    print(equations);
 
     return successExitCode;
 
 }
 
+alias TokenStrategy => [Boolean(String), Token(String)];
+
 abstract class Token of PlusSign | EqualsSign | Variable | UnsignedInteger | Unknown {
 
-    shared static {[Boolean(String), Token(String)]+} predicatesAndConstructors = {
-        [PlusSign.isInstanceOf, PlusSign],
-        [EqualsSign.isInstanceOf, EqualsSign],
-        [UnsignedInteger.isInstanceOf, UnsignedInteger],
-        [Variable.isInstanceOf, Variable]
+    shared static {TokenStrategy+} tokenStrategies = {
+        [PlusSign.canBeBuildFrom, PlusSign],
+        [EqualsSign.canBeBuiltFrom, EqualsSign],
+        [UnsignedInteger.canBeBuiltFrom, UnsignedInteger],
+        [Variable.canBeBuiltFrom, Variable]
     };
 
     shared static Token asToken(String lexicalUnit) {
 
-        value predicateAndConstructor = predicatesAndConstructors.find(([Boolean(String), Token(String)] element) {
-            return element.first(lexicalUnit);
+        value strategy = tokenStrategies.find((TokenStrategy element) {
+            value predicate = element.first;
+
+            return predicate(lexicalUnit);
         });
 
-        if (exists predicateAndConstructor) {
-            value [tokenPredicate, tokenConstructor] = predicateAndConstructor;
+        if (exists strategy) {
+            value [predicate, buildTokenFrom] = strategy;
 
-            return tokenConstructor(lexicalUnit);
+            return buildTokenFrom(lexicalUnit);
         }
 
         return Unknown(lexicalUnit);
@@ -115,7 +124,7 @@ abstract class Token of PlusSign | EqualsSign | Variable | UnsignedInteger | Unk
 
 class PlusSign extends Token {
 
-    shared static Boolean isInstanceOf(String lexicalUnit) => lexicalUnit == "+";
+    shared static Boolean canBeBuildFrom(String lexicalUnit) => lexicalUnit == "+";
 
     shared new (String lexicalUnit) extends Token(lexicalUnit) {}
 
@@ -125,7 +134,7 @@ class PlusSign extends Token {
 
 class EqualsSign extends Token {
 
-    shared static Boolean isInstanceOf(String lexicalUnit) => lexicalUnit == "=";
+    shared static Boolean canBeBuiltFrom(String lexicalUnit) => lexicalUnit == "=";
 
     shared new (String lexicalUnit) extends Token(lexicalUnit) {}
 
@@ -135,14 +144,14 @@ class EqualsSign extends Token {
 
 class UnsignedInteger extends Token {
 
-    shared static Boolean isInstanceOf(String lexicalUnit) =>
+    shared static Boolean canBeBuiltFrom(String lexicalUnit) =>
             Integer.parse(lexicalUnit) is Integer;
 
     shared Integer val;
 
     shared new (String lexicalUnit) extends Token(lexicalUnit) {
 
-        assert (UnsignedInteger.isInstanceOf(lexicalUnit),
+        assert (UnsignedInteger.canBeBuiltFrom(lexicalUnit),
             is Integer val = Integer.parse(lexicalUnit));
 
         this.val = val;
@@ -156,7 +165,7 @@ class UnsignedInteger extends Token {
 
 class Variable extends Token {
 
-    shared static Boolean isInstanceOf(String lexicalUnit) =>
+    shared static Boolean canBeBuiltFrom(String lexicalUnit) =>
             lexicalUnit.every(Character.letter);
 
     shared String name;

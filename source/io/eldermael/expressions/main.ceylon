@@ -21,6 +21,9 @@ String usage = """
                   Usage: expression file
                   """;
 
+alias Equation => [String, Expression];
+alias EquationContext => HashMap<String,Expression>;
+
 
 shared void run() {
 
@@ -69,33 +72,35 @@ Integer evaluateFile(File file) {
 
     value tokensByLine = parse(file);
 
-    value fullEquationContext = tokensByLine
-        .map(toExpression)
-        .fold(HashMap<String,Expression>())((partialContext, equation) {
+    EquationContext context = tokensByLine
+        .map(toEquation)
+        .fold(HashMap<String,Expression>())(toContext);
 
-        value [lhs, rhs] = equation;
+    context.keys.sort(byIncreasing(String.string)).each((String variableName) {
 
-        partialContext.put(lhs, rhs);
-
-        return partialContext;
-
-    });
-
-    fullEquationContext.keys.sort(byIncreasing(String.string)).each((String variableName) {
-
-        value result = fullEquationContext.get(variableName);
+        value result = context.get(variableName);
 
         "Variable ``variableName``` not defined"
         assert (exists result);
 
-        print("``variableName`` = ``result.eval(fullEquationContext).string``");
+        print("``variableName`` = ``result.eval(context).string``");
 
     });
 
     return successExitCode;
 }
 
-[String, Expression] toExpression({Token+} lineTokens) {
+EquationContext toContext(HashMap<String,Expression> partialContext,
+        [String, Expression] equation) {
+    value [lhs, rhs] = equation;
+
+    partialContext.put(lhs, rhs);
+
+    return partialContext;
+}
+
+
+Equation toEquation({Token+} lineTokens) {
     value lhs = lineTokens.first;
 
     assert (is Variable lhs);
@@ -110,11 +115,14 @@ Integer evaluateFile(File file) {
 
 {{Token+}+} parse(File file) {
     value fileLines = lines(file);
+
     "File must contain expressions"
     assert (nonempty fileLines);
+
     value equations = fileLines
         .map((line) => line.split())
         .map((lexicalUnits) => lexicalUnits.map(Token.asToken));
+    
     return equations;
 }
 

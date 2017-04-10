@@ -12,7 +12,7 @@ Integer successExitCode = 0;
 
 Integer noArgumentsExitCode = 1;
 
-Integer fileNameIsDirectoryExitCode = 2;
+Integer pathIsDirectoryExitCode = 2;
 
 Integer fileDoesNotExistsExitCode = 3;
 
@@ -30,7 +30,7 @@ shared void run() {
         value fileName = process.arguments.first;
 
         if (!exists fileName) {
-            exitProcess(noArgumentsExitCode, usage);
+            exitProcessWith(noArgumentsExitCode, usage);
             return;
         }
 
@@ -38,24 +38,24 @@ shared void run() {
 
         switch (file)
         case (is File) {
-            Integer exitCode = evaluateFile(file);
-            exitProcess(exitCode);
+            Integer evaluationExitCode = evaluateFile(file);
+            exitProcessWith(evaluationExitCode);
         }
         case (is Directory) {
-            exitProcess(fileNameIsDirectoryExitCode, "``file.string``: is a Directory ");
+            exitProcessWith(pathIsDirectoryExitCode, "``file.string``: is a Directory ");
         }
         case (is Nil) {
-            exitProcess(fileDoesNotExistsExitCode, "``file.string``: no such file.");
+            exitProcessWith(fileDoesNotExistsExitCode, "``file.string``: no such file.");
         }
 
     } catch (Exception|AssertionError error) {
-        exitProcess(unknownErrorExitCode, "Error: ``error.message``");
+        exitProcessWith(unknownErrorExitCode, "Error: ``error.message``");
     }
 
 }
 
 suppressWarnings ("expressionTypeNothing")
-void exitProcess(Integer exitCode, String? message = null) {
+void exitProcessWith(Integer exitCode, String? message = null) {
 
     if (exists message) {
         print(message);

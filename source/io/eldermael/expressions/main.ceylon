@@ -67,25 +67,18 @@ void exitProcessWith(Integer exitCode, String? message = null) {
 
 Integer evaluateFile(File file) {
 
-    value equations = parse(file);
+    value tokensByLine = parse(file);
 
-    value fullEquationContext = equations.map(({Token+} element) {
-        value lhs = element.first;
-
-        assert (is Variable lhs);
-
-        value rhsTokens = element.skip(2);
-
-        value rhsExpression = buildExpressionFrom(rhsTokens);
-
-        return [lhs, rhsExpression];
-
-    }).fold(HashMap<String,Expression>())((partialContext, equation) {
+    value fullEquationContext = tokensByLine
+        .map(toExpression)
+        .fold(HashMap<String,Expression>())((partialContext, equation) {
 
         value [lhs, rhs] = equation;
-        partialContext.put(lhs.name, rhs);
+
+        partialContext.put(lhs, rhs);
 
         return partialContext;
+
     });
 
     fullEquationContext.keys.sort(byIncreasing(String.string)).each((String variableName) {
@@ -100,6 +93,19 @@ Integer evaluateFile(File file) {
     });
 
     return successExitCode;
+}
+
+[String, Expression] toExpression({Token+} lineTokens) {
+    value lhs = lineTokens.first;
+
+    assert (is Variable lhs);
+
+    value rhsTokens = lineTokens.skip(2);
+
+    value rhsExpression = buildExpressionFrom(rhsTokens);
+
+    return [lhs.name, rhsExpression];
+
 }
 
 {{Token+}+} parse(File file) {

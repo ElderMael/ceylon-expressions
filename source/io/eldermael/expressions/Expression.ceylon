@@ -21,7 +21,7 @@ abstract class Expression() of Sum | Literal | Var {
             "Variable ``expression.name`` does not exists in context"
             assert (exists val);
 
-            return this.cachedResult =val.eval(context);
+            return this.cachedResult = val.eval(context);
 
         }
     }

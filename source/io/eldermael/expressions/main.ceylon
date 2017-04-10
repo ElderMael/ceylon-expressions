@@ -1,7 +1,6 @@
 import ceylon.collection {
     HashMap,
-    LinkedList,
-    Stack
+    LinkedList
 }
 import ceylon.file {
     ...
@@ -100,7 +99,7 @@ EquationContext evaluateFile(File file) {
 
 }
 
-EquationContext toContext(HashMap<String,Expression> partialContext,
+EquationContext toContext(EquationContext partialContext,
         [String, Expression] equation) {
     value [lhs, rhs] = equation;
 
@@ -140,7 +139,7 @@ Expression buildExpressionFrom({Token*} rhs) {
 
     value postfix = asPostfix(rhs);
 
-    value stack = postfix.fold<Stack<Expression>>(LinkedList<Expression>())((partial, token) {
+    value stack = postfix.fold(LinkedList<Expression>())((partial, token) {
 
         "RHS cannot have token type ``token.string``"
         assert (!is EqualsSign|Unknown token);
@@ -179,7 +178,7 @@ Expression buildExpressionFrom({Token*} rhs) {
 {Token*} asPostfix({Token*} infix) {
 
 
-    value [stack, buffer] = infix.fold<[LinkedList<Token>, LinkedList<Token>]>([LinkedList<Token>(), LinkedList<Token>()])((partial, token) {
+    value [stack, buffer] = infix.fold([LinkedList<Token>(), LinkedList<Token>()])((partial, token) {
 
         value [operatorStack, buffer] = partial;
 

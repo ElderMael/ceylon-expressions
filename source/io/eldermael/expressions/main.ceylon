@@ -1,5 +1,4 @@
 import ceylon.collection {
-    MutableMap,
     HashMap,
     LinkedList,
     Stack
@@ -70,8 +69,6 @@ Integer evaluateFile(File file) {
 
     value equations = parse(file);
 
-    value equationContext = HashMap<String,Expression>();
-
     value fullEquationContext = equations.map(({Token+} element) {
         value lhs = element.first;
 
@@ -79,11 +76,11 @@ Integer evaluateFile(File file) {
 
         value rhsTokens = element.skip(2);
 
-        value rhsExpression = buildExpressionFrom(rhsTokens, equationContext);
+        value rhsExpression = buildExpressionFrom(rhsTokens);
 
         return [lhs, rhsExpression];
 
-    }).fold(equationContext)((partialContext, equation) {
+    }).fold(HashMap<String,Expression>())((partialContext, equation) {
 
         value [lhs, rhs] = equation;
         partialContext.put(lhs.name, rhs);
@@ -93,12 +90,12 @@ Integer evaluateFile(File file) {
 
     fullEquationContext.keys.sort(byIncreasing(String.string)).each((String variableName) {
 
-        value result = equationContext.get(variableName);
+        value result = fullEquationContext.get(variableName);
 
         "Variable ``variableName``` not defined"
         assert (exists result);
 
-        print("``variableName`` = ``result.eval().string``");
+        print("``variableName`` = ``result.eval(fullEquationContext).string``");
 
     });
 
@@ -115,7 +112,7 @@ Integer evaluateFile(File file) {
     return equations;
 }
 
-Expression buildExpressionFrom({Token*} rhs, MutableMap<String,Expression> context) {
+Expression buildExpressionFrom({Token*} rhs) {
 
     value postfix = asPostfix(rhs);
 
@@ -126,7 +123,7 @@ Expression buildExpressionFrom({Token*} rhs, MutableMap<String,Expression> conte
 
         switch (token)
         case (is Variable) {
-            partial.push(Var(token.name, context));
+            partial.push(Var(token.name));
         }
         case (is UnsignedInteger) {
             partial.push(Literal(token.val));

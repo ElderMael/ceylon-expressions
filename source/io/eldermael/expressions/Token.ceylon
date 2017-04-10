@@ -1,4 +1,3 @@
-
 alias TokenStrategy => [Boolean(String), Token(String)];
 
 abstract class Token of PlusSign | EqualsSign | Variable | UnsignedInteger | Unknown {

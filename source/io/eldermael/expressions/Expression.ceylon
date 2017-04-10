@@ -1,12 +1,8 @@
-import ceylon.collection {
-    MutableMap
-}
-
 abstract class Expression() of Sum | Literal | Var {
 
     shared variable Integer? cachedResult = null;
 
-    shared Integer eval() {
+    shared Integer eval(Map<String,Expression> context) {
 
         if (exists result = cachedResult) {
             return result;
@@ -17,15 +13,15 @@ abstract class Expression() of Sum | Literal | Var {
             return this.cachedResult = expression.number;
         }
         case (is Sum) {
-            return this.cachedResult = (expression.left.eval() + expression.right.eval());
+            return this.cachedResult = (expression.left.eval(context) +expression.right.eval(context));
         }
         case (is Var) {
-            value val = expression.context.get(expression.name);
+            value val = context.get(expression.name);
 
             "Variable ``expression.name`` does not exists in context"
             assert (exists val);
 
-            return this.cachedResult = val.eval();
+            return this.cachedResult =val.eval(context);
 
         }
     }
@@ -40,7 +36,7 @@ class Sum(shared Expression left, shared Expression right) extends Expression() 
     string => "``left.string`` + ``right.string``";
 }
 
-class Var(shared String name, shared MutableMap<String,Expression> context) extends Expression() {
+class Var(shared String name) extends Expression() {
     string => this.name;
 }
 

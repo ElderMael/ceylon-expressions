@@ -24,7 +24,6 @@ String usage = """
 alias Equation => [String, Expression];
 alias EquationContext => HashMap<String,Expression>;
 
-
 shared void run() {
 
     try {
@@ -40,8 +39,12 @@ shared void run() {
 
         switch (file)
         case (is File) {
-            Integer evaluationExitCode = evaluateFile(file);
-            exitProcessWith(evaluationExitCode);
+
+            value context = evaluateFile(file);
+
+            value output = generateOutputFrom(context);
+
+            exitProcessWith(successExitCode, output);
         }
         case (is Directory) {
             exitProcessWith(pathIsDirectoryExitCode, "``file.string``: is a Directory ");
@@ -56,6 +59,23 @@ shared void run() {
 
 }
 
+String? generateOutputFrom(EquationContext context) {
+
+    value outputs = context.keys.sort(byIncreasing(String.string)).map((String variableName) {
+
+        value result = context.get(variableName);
+
+        "Variable ``variableName``` not defined"
+        assert (exists result);
+
+        return "``variableName`` = ``result.eval(context).string``\n";
+
+    });
+
+
+    return outputs.reduce(plus);
+}
+
 suppressWarnings ("expressionTypeNothing")
 void exitProcessWith(Integer exitCode, String? message = null) {
 
@@ -68,7 +88,7 @@ void exitProcessWith(Integer exitCode, String? message = null) {
 }
 
 
-Integer evaluateFile(File file) {
+EquationContext evaluateFile(File file) {
 
     value tokensByLine = parse(file);
 
@@ -76,18 +96,8 @@ Integer evaluateFile(File file) {
         .map(toEquation)
         .fold(HashMap<String,Expression>())(toContext);
 
-    context.keys.sort(byIncreasing(String.string)).each((String variableName) {
+    return context;
 
-        value result = context.get(variableName);
-
-        "Variable ``variableName``` not defined"
-        assert (exists result);
-
-        print("``variableName`` = ``result.eval(context).string``");
-
-    });
-
-    return successExitCode;
 }
 
 EquationContext toContext(HashMap<String,Expression> partialContext,
@@ -122,7 +132,7 @@ Equation toEquation({Token+} lineTokens) {
     value equations = fileLines
         .map((line) => line.split())
         .map((lexicalUnits) => lexicalUnits.map(Token.asToken));
-    
+
     return equations;
 }
 

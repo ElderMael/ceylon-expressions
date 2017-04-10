@@ -70,30 +70,30 @@ Integer evaluateFile(File file) {
 
     value equations = parse(file);
 
-    value context = HashMap<String,Expression>();
+    value equationContext = HashMap<String,Expression>();
 
-    equations.map(({Token+} element) {
+    value fullEquationContext = equations.map(({Token+} element) {
         value lhs = element.first;
 
         assert (is Variable lhs);
 
-        value rhs = element.skip(2);
+        value rhsTokens = element.skip(2);
 
-        value rhsExpression = buildExpressionFrom(rhs, context);
+        value rhsExpression = buildExpressionFrom(rhsTokens, equationContext);
 
         return [lhs, rhsExpression];
 
-    }).fold(context)((partial, equation) {
+    }).fold(equationContext)((partialContext, equation) {
 
         value [lhs, rhs] = equation;
-        partial.put(lhs.name, rhs);
+        partialContext.put(lhs.name, rhs);
 
-        return partial;
+        return partialContext;
     });
 
-    context.keys.sort(byIncreasing(String.string)).each((String variableName) {
+    fullEquationContext.keys.sort(byIncreasing(String.string)).each((String variableName) {
 
-        value result = context.get(variableName);
+        value result = equationContext.get(variableName);
 
         "Variable ``variableName``` not defined"
         assert (exists result);

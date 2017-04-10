@@ -27,35 +27,29 @@ shared void run() {
 
     try {
 
-        value [exitCode, message] = processFile(process.arguments);
-        exitProcess(exitCode, message);
+        value fileName = process.arguments.first;
+
+        if (!exists fileName) {
+            exitProcess(noArgumentsExitCode, usage);
+            return;
+        }
+
+        value file = parsePath(fileName).resource.linkedResource;
+
+        switch (file)
+        case (is File) {
+            Integer exitCode = evaluateFile(file);
+            exitProcess(exitCode);
+        }
+        case (is Directory) {
+            exitProcess(fileNameIsDirectoryExitCode, "``file.string``: is a Directory ");
+        }
+        case (is Nil) {
+            exitProcess(fileDoesNotExistsExitCode, "``file.string``: no such file.");
+        }
 
     } catch (Exception|AssertionError error) {
         exitProcess(unknownErrorExitCode, "Error: ``error.message``");
-    }
-
-}
-
-[Integer, String?] processFile(String[] arguments) {
-
-    if (is Empty arguments) {
-        return [noArgumentsExitCode, usage];
-    }
-
-    value fileName = arguments.first;
-
-    value file = parsePath(fileName).resource.linkedResource;
-
-    switch (file)
-    case (is File) {
-        Integer exitCode = evaluateFile(file);
-        return [exitCode, null];
-    }
-    case (is Directory) {
-        return [fileNameIsDirectoryExitCode, "``file.string``: is a Directory "];
-    }
-    case (is Nil) {
-        return [fileDoesNotExistsExitCode, "``file.string``: no such file."];
     }
 
 }
@@ -74,21 +68,11 @@ void exitProcess(Integer exitCode, String? message = null) {
 
 Integer evaluateFile(File file) {
 
+    value equations = parse(file);
+
     value context = HashMap<String,Expression>();
 
-    print(file.path.absolutePath.uriString);
-
-    value fileLines = lines(file);
-
-    "File must contain expressions"
-    assert (nonempty fileLines);
-
-    value equations = fileLines
-        .map((line) => line.split())
-        .map((lexicalUnits) => lexicalUnits.map(Token.asToken));
-
-
-    equations.each(({Token+} element) {
+    equations.map(({Token+} element) {
         value lhs = element.first;
 
         assert (is Variable lhs);
@@ -97,8 +81,14 @@ Integer evaluateFile(File file) {
 
         value rhsExpression = buildExpressionFrom(rhs, context);
 
-        context.put(lhs.name, rhsExpression);
+        return [lhs, rhsExpression];
 
+    }).fold(context)((partial, equation) {
+
+        value [lhs, rhs] = equation;
+        partial.put(lhs.name, rhs);
+
+        return partial;
     });
 
     context.keys.sort(byIncreasing(String.string)).each((String variableName) {
@@ -113,6 +103,16 @@ Integer evaluateFile(File file) {
     });
 
     return successExitCode;
+}
+
+{{Token+}+} parse(File file) {
+    value fileLines = lines(file);
+    "File must contain expressions"
+    assert (nonempty fileLines);
+    value equations = fileLines
+        .map((line) => line.split())
+        .map((lexicalUnits) => lexicalUnits.map(Token.asToken));
+    return equations;
 }
 
 Expression buildExpressionFrom({Token*} rhs, MutableMap<String,Expression> context) {

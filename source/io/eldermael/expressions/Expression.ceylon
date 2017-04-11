@@ -74,13 +74,57 @@ abstract class Expression() of Sum | Literal | Var {
 
 class Literal(shared Integer number) extends Expression() {
     string => number.string;
+
+
+    shared actual Boolean equals(Object that) {
+        if (is Literal that) {
+            return number == that.number;
+        }
+
+        return false;
+
+    }
+
+    shared actual Integer hash => number;
+
+
 }
 
 class Sum(shared Expression left, shared Expression right) extends Expression() {
     string => "``left.string`` + ``right.string``";
+
+    shared actual Boolean equals(Object that) {
+        if (is Sum that) {
+            return left == that.left &&
+            right == that.right;
+        }
+
+        return false;
+
+    }
+
+    shared actual Integer hash {
+        variable value hash = 1;
+        hash = 31 * hash + left.hash;
+        hash = 31 * hash + right.hash;
+        return hash;
+    }
+
 }
 
 class Var(shared String name) extends Expression() {
     string => this.name;
+
+    shared actual Boolean equals(Object that) {
+        if (is Var that) {
+            return name == that.name;
+        }
+
+        return false;
+        
+    }
+
+    shared actual Integer hash => name.hash;
+
 }
 

@@ -8,7 +8,7 @@ Expression buildExpressionFrom({Token*} rhs) {
 
     value stack = postfix.fold(LinkedList<Expression>())((partial, token) {
 
-        "RHS cannot have token type ``token.string``"
+        "RHS expression cannot have token type ``token.string``"
         assert (!is EqualsSign|Unknown token);
 
         switch (token)

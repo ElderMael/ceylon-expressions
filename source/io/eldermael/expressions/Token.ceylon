@@ -1,10 +1,6 @@
 import ceylon.collection {
     LinkedList
 }
-import ceylon.file {
-    File,
-    lines
-}
 
 {{Token+}+} parse(String[] fileLines) {
 

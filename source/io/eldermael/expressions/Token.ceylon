@@ -6,8 +6,7 @@ import ceylon.file {
     lines
 }
 
-{{Token+}+} parse(File file) {
-    value fileLines = lines(file);
+{{Token+}+} parse(String[] fileLines) {
 
     "File must contain expressions"
     assert (nonempty fileLines);

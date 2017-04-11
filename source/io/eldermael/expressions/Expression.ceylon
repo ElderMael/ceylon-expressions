@@ -35,6 +35,9 @@ Expression buildExpressionFrom({Token*} rhs) {
 
     value expression = stack.pop();
 
+    "Expression ``rhs`` is not balanced"
+    assert (stack.empty);
+
     "Must always have a expression resulting from RHS"
     assert (exists expression);
 
@@ -57,7 +60,8 @@ abstract class Expression() of Sum | Literal | Var {
             return this.cachedResult = expression.number;
         }
         case (is Sum) {
-            return this.cachedResult = (expression.left.eval(context) +expression.right.eval(context));
+            return this.cachedResult = (expression.left.eval(context) +
+                expression.right.eval(context));
         }
         case (is Var) {
             value val = context.get(expression.name);
@@ -86,7 +90,6 @@ class Literal(shared Integer number) extends Expression() {
     }
 
     shared actual Integer hash => number;
-
 
 }
 

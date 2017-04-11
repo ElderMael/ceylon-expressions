@@ -38,7 +38,9 @@ shared void run() {
         switch (file)
         case (is File) {
 
-            value context = evaluateFile(file);
+            value fileLines = lines(file);
+
+            value context = evaluateEquations(fileLines);
 
             value output = generateOutputFrom(context);
 
@@ -75,13 +77,13 @@ String? generateOutputFrom(EquationContext context) {
 }
 
 
-EquationContext evaluateFile(File file) {
+EquationContext evaluateEquations(String[] equations) {
 
-    value tokensByLine = parse(file);
+    value tokens = parse(equations);
 
     value initialContext = HashMap<String, Expression>();
 
-    EquationContext context = tokensByLine
+    EquationContext context = tokens
         .map(toEquation)
         .fold(initialContext)(intoContext);
 

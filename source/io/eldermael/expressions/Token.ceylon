@@ -1,3 +1,24 @@
+import ceylon.collection {
+    LinkedList
+}
+import ceylon.file {
+    File,
+    lines
+}
+
+{{Token+}+} parse(File file) {
+    value fileLines = lines(file);
+
+    "File must contain expressions"
+    assert (nonempty fileLines);
+
+    value equations = fileLines
+        .map((line) => line.split())
+        .map((lexicalUnits) => lexicalUnits.map(Token.asToken));
+
+    return equations;
+}
+
 alias TokenStrategy => [Boolean(String), Token(String)];
 
 abstract class Token of PlusSign | EqualsSign | Variable | UnsignedInteger | Unknown {
@@ -95,4 +116,51 @@ class Unknown(String lexicalUnit) extends Token(lexicalUnit) {
 
     string => "Unknown(``lexicalUnit``)";
 
+}
+
+{Token*} asPostfix({Token*} infix) {
+
+
+    value [stack, buffer] = infix.fold([LinkedList<Token>(), LinkedList<Token>()])((partial, token) {
+
+        value [operatorStack, buffer] = partial;
+
+        "RHS of equation cannot contain ``token.string``"
+        assert (!is Unknown|EqualsSign token);
+
+        switch (token)
+        case (is UnsignedInteger|Variable) {
+            buffer.add(token);
+            return [operatorStack, buffer];
+        }
+        case (is PlusSign) {
+
+            if (operatorStack.empty) {
+                operatorStack.add(token);
+                return [operatorStack, buffer];
+            }
+
+            while (exists top = operatorStack.top) {
+
+                if (hasHigherPrecedence(top, token)) {
+                    operatorStack.pop();
+                    buffer.add(top);
+                }
+
+                buffer.add(token);
+
+                break;
+
+            }
+
+            return [operatorStack, buffer];
+
+        }
+    });
+
+    return buffer.chain(stack.reversed);
+}
+
+Boolean hasHigherPrecedence(Token operatorA, Token operatorB) {
+    return false;
 }

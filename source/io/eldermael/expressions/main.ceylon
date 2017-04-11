@@ -20,7 +20,7 @@ String usage = """
                   """;
 
 alias Equation => [String, Expression];
-alias EquationContext => HashMap<String,Expression>;
+alias EquationContext => HashMap<String, Expression>;
 
 shared void run() {
 
@@ -79,7 +79,7 @@ EquationContext evaluateFile(File file) {
 
     value tokensByLine = parse(file);
 
-    value initialContext = HashMap<String,Expression>();
+    value initialContext = HashMap<String, Expression>();
 
     EquationContext context = tokensByLine
         .map(toEquation)

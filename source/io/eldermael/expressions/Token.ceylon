@@ -54,25 +54,62 @@ abstract class Token of PlusSign | EqualsSign | Variable | UnsignedInteger | Unk
 
 }
 
+interface Operator {
 
-class PlusSign extends Token {
+    shared formal Integer precedence;
+
+    shared Boolean hasHigherPrecedence(Operator operatorB) {
+        return this.precedence>operatorB.precedence;
+    }
+
+}
+
+
+class PlusSign extends Token satisfies Operator {
 
     shared static Boolean canBeBuiltFrom(String lexicalUnit) => lexicalUnit == "+";
 
     shared new (String lexicalUnit) extends Token(lexicalUnit) {}
 
+    shared actual Integer precedence => 4;
+
     string => "Plus(+)";
+
+    shared actual Boolean equals(Object that) {
+        if (is PlusSign that) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    shared actual Integer hash => "+".hash;
 
 
 }
 
-class EqualsSign extends Token {
+class EqualsSign extends Token satisfies Operator {
 
     shared static Boolean canBeBuiltFrom(String lexicalUnit) => lexicalUnit == "=";
 
     shared new (String lexicalUnit) extends Token(lexicalUnit) {}
 
+    shared actual Integer precedence => 14;
+
     string => "Equals(=)";
+
+    shared actual Boolean equals(Object that) {
+        if (is EqualsSign that) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    shared actual Integer hash => "=".hash;
+
 
 }
 
@@ -93,6 +130,17 @@ class UnsignedInteger extends Token {
 
     string => "UnsignedInteger(``val.string``)";
 
+    shared actual Boolean equals(Object that) {
+        if (is UnsignedInteger that) {
+            return val == that.val;
+        }
+
+        return false;
+
+    }
+
+    shared actual Integer hash => val;
+
 
 }
 
@@ -110,20 +158,46 @@ class Variable extends Token {
 
 
     string => "Variable(``name``)";
+
+    shared actual Boolean equals(Object that) {
+        if (is Variable that) {
+            return name == that.name;
+        }
+
+        return false;
+    }
+
+    shared actual Integer hash => name.hash;
+
 }
 
 class Unknown(String lexicalUnit) extends Token(lexicalUnit) {
 
     string => "Unknown(``lexicalUnit``)";
 
+    shared actual Boolean equals(Object that) {
+        if (is Unknown that) {
+            return lexicalUnit == that.lexicalUnit;
+        }
+
+        return false;
+
+    }
+
+    shared actual Integer hash => lexicalUnit.hash;
+
+
 }
 
 {Token*} asPostfix({Token*} infix) {
 
 
-    value [stack, buffer] = infix.fold([LinkedList<Token>(), LinkedList<Token>()])((partial, token) {
+    value initialStackAndBuffer = [LinkedList<Operator&Token>(), LinkedList<Token>()];
 
-        value [operatorStack, buffer] = partial;
+    value [stack, buffer] = infix
+        .fold(initialStackAndBuffer)((stackAndBuffer, token) {
+
+        value [operatorStack, buffer] = stackAndBuffer;
 
         "RHS of equation cannot contain ``token.string``"
         assert (!is Unknown|EqualsSign token);
@@ -142,7 +216,7 @@ class Unknown(String lexicalUnit) extends Token(lexicalUnit) {
 
             while (exists top = operatorStack.top) {
 
-                if (hasHigherPrecedence(top, token)) {
+                if (top.hasHigherPrecedence(token)) {
                     operatorStack.pop();
                     buffer.add(top);
                 }
@@ -161,6 +235,3 @@ class Unknown(String lexicalUnit) extends Token(lexicalUnit) {
     return buffer.chain(stack.reversed);
 }
 
-Boolean hasHigherPrecedence(Token operatorA, Token operatorB) {
-    return false;
-}

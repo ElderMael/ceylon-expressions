@@ -46,7 +46,7 @@ abstract class Expression() of Sum | Literal | Var {
 
     shared variable Integer? cachedResult = null;
 
-    shared Integer eval(Map<String,Expression> context) {
+    shared Integer eval(Map<String, Expression> context) {
 
         if (exists result = cachedResult) {
             return result;
@@ -121,7 +121,7 @@ class Var(shared String name) extends Expression() {
         }
 
         return false;
-        
+
     }
 
     shared actual Integer hash => name.hash;

@@ -2,7 +2,7 @@ import ceylon.collection {
     LinkedList
 }
 
-Expression buildExpressionFrom({Token*} rhs) {
+shared Expression buildExpressionFrom({Token*} rhs) {
 
     value postfix = asPostfix(rhs);
 
@@ -45,7 +45,7 @@ Expression buildExpressionFrom({Token*} rhs) {
 
 }
 
-abstract class Expression() of Sum | Literal | Var {
+shared abstract class Expression() of Sum | Literal | Var {
 
     shared variable Integer? cachedResult = null;
 
@@ -76,7 +76,7 @@ abstract class Expression() of Sum | Literal | Var {
 
 }
 
-class Literal(shared Integer number) extends Expression() {
+shared class Literal(shared Integer number) extends Expression() {
     string => number.string;
 
 
@@ -93,7 +93,7 @@ class Literal(shared Integer number) extends Expression() {
 
 }
 
-class Sum(shared Expression left, shared Expression right) extends Expression() {
+shared class Sum(shared Expression left, shared Expression right) extends Expression() {
     string => "``left.string`` + ``right.string``";
 
     shared actual Boolean equals(Object that) {
@@ -115,7 +115,7 @@ class Sum(shared Expression left, shared Expression right) extends Expression() 
 
 }
 
-class Var(shared String name) extends Expression() {
+shared class Var(shared String name) extends Expression() {
     string => this.name;
 
     shared actual Boolean equals(Object that) {

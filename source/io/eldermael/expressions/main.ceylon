@@ -19,8 +19,8 @@ String usage = """
                   Usage: expression file
                   """;
 
-alias Equation => [String, Expression];
-alias EquationContext => HashMap<String, Expression>;
+shared alias Equation => [String, Expression];
+shared alias EquationContext => HashMap<String, Expression>;
 
 shared void run() {
 
@@ -59,7 +59,7 @@ shared void run() {
 
 }
 
-String? generateOutputFrom(EquationContext context) {
+shared String? generateOutputFrom(EquationContext context) {
 
     value outputs = context.keys.sort(byIncreasing(String.string)).map((String variableName) {
 
@@ -77,7 +77,7 @@ String? generateOutputFrom(EquationContext context) {
 }
 
 
-EquationContext evaluateEquations(String[] equations) {
+shared EquationContext evaluateEquations(String[] equations) {
 
     value tokens = parse(equations);
 
@@ -91,7 +91,7 @@ EquationContext evaluateEquations(String[] equations) {
 
 }
 
-EquationContext intoContext(EquationContext partialContext,
+shared EquationContext intoContext(EquationContext partialContext,
         [String, Expression] equation) {
     value [lhs, rhs] = equation;
 
@@ -101,7 +101,7 @@ EquationContext intoContext(EquationContext partialContext,
 }
 
 
-Equation toEquation({Token+} lineTokens) {
+shared Equation toEquation({Token+} lineTokens) {
     value lhs = lineTokens.first;
 
     assert (is Variable lhs);
@@ -116,7 +116,7 @@ Equation toEquation({Token+} lineTokens) {
 
 
 suppressWarnings ("expressionTypeNothing")
-void exitProcessWith(Integer exitCode, String? message = null) {
+shared void exitProcessWith(Integer exitCode, String? message = null) {
 
     if (exists message) {
         print(message);

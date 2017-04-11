@@ -20,7 +20,7 @@ import ceylon.file {
 
 alias TokenStrategy => [Boolean(String), Token(String)];
 
-abstract class Token of PlusSign | EqualsSign | Variable | UnsignedInteger | Unknown {
+shared abstract class Token of PlusSign | EqualsSign | Variable | UnsignedInteger | Unknown {
 
     static {TokenStrategy+} tokenStrategies = {
         [PlusSign.canBeBuiltFrom, PlusSign],
@@ -53,7 +53,7 @@ abstract class Token of PlusSign | EqualsSign | Variable | UnsignedInteger | Unk
 
 }
 
-interface Operator {
+shared interface Operator {
 
     shared formal Integer precedence;
 
@@ -64,7 +64,7 @@ interface Operator {
 }
 
 
-class PlusSign extends Token satisfies Operator {
+shared class PlusSign extends Token satisfies Operator {
 
     shared static Boolean canBeBuiltFrom(String lexicalUnit) => lexicalUnit == "+";
 
@@ -88,7 +88,7 @@ class PlusSign extends Token satisfies Operator {
 
 }
 
-class EqualsSign extends Token satisfies Operator {
+shared class EqualsSign extends Token satisfies Operator {
 
     shared static Boolean canBeBuiltFrom(String lexicalUnit) => lexicalUnit == "=";
 
@@ -112,7 +112,7 @@ class EqualsSign extends Token satisfies Operator {
 
 }
 
-class UnsignedInteger extends Token {
+shared class UnsignedInteger extends Token {
 
     shared static Boolean canBeBuiltFrom(String lexicalUnit) =>
             Integer.parse(lexicalUnit) is Integer;
@@ -143,7 +143,7 @@ class UnsignedInteger extends Token {
 
 }
 
-class Variable extends Token {
+shared class Variable extends Token {
 
     shared static Boolean canBeBuiltFrom(String lexicalUnit) =>
             lexicalUnit.every(Character.letter);
@@ -170,7 +170,7 @@ class Variable extends Token {
 
 }
 
-class Unknown(String lexicalUnit) extends Token(lexicalUnit) {
+shared class Unknown(String lexicalUnit) extends Token(lexicalUnit) {
 
     string => "Unknown(``lexicalUnit``)";
 
@@ -188,7 +188,7 @@ class Unknown(String lexicalUnit) extends Token(lexicalUnit) {
 
 }
 
-{Token*} asPostfix({Token*} infix) {
+shared {Token*} asPostfix({Token*} infix) {
 
 
     value initialStackAndBuffer = [LinkedList<Operator&Token>(), LinkedList<Token>()];

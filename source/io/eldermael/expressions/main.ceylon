@@ -1,6 +1,5 @@
 import ceylon.collection {
-    HashMap,
-    LinkedList
+    HashMap
 }
 import ceylon.file {
     ...
@@ -75,31 +74,22 @@ String? generateOutputFrom(EquationContext context) {
     return outputs.reduce(plus);
 }
 
-suppressWarnings ("expressionTypeNothing")
-void exitProcessWith(Integer exitCode, String? message = null) {
-
-    if (exists message) {
-        print(message);
-    }
-
-    process.exit(exitCode);
-
-}
-
 
 EquationContext evaluateFile(File file) {
 
     value tokensByLine = parse(file);
 
+    value initialContext = HashMap<String,Expression>();
+
     EquationContext context = tokensByLine
         .map(toEquation)
-        .fold(HashMap<String,Expression>())(toContext);
+        .fold(initialContext)(intoContext);
 
     return context;
 
 }
 
-EquationContext toContext(EquationContext partialContext,
+EquationContext intoContext(EquationContext partialContext,
         [String, Expression] equation) {
     value [lhs, rhs] = equation;
 
@@ -123,46 +113,13 @@ Equation toEquation({Token+} lineTokens) {
 }
 
 
+suppressWarnings ("expressionTypeNothing")
+void exitProcessWith(Integer exitCode, String? message = null) {
 
-Expression buildExpressionFrom({Token*} rhs) {
+    if (exists message) {
+        print(message);
+    }
 
-    value postfix = asPostfix(rhs);
-
-    value stack = postfix.fold(LinkedList<Expression>())((partial, token) {
-
-        "RHS cannot have token type ``token.string``"
-        assert (!is EqualsSign|Unknown token);
-
-        switch (token)
-        case (is Variable) {
-            partial.push(Var(token.name));
-        }
-        case (is UnsignedInteger) {
-            partial.push(Literal(token.val));
-        }
-        case (is PlusSign) {
-            value right = partial.pop();
-            value left = partial.pop();
-
-            "Operand missing"
-            assert (exists left, exists right);
-
-            partial.push(Sum(left, right));
-        }
-
-
-        return partial;
-    });
-
-
-    value expression = stack.pop();
-
-    "Must always have a expression resulting from RHS"
-    assert (exists expression);
-
-    return expression;
+    process.exit(exitCode);
 
 }
-
-
-

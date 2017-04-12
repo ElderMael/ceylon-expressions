@@ -9,12 +9,25 @@ import io.eldermael.expressions {
 test
 shared void shouldReturnProperToken() {
     // given
-    {Token+} expected = { Variable("var"), EqualsSign("="), PlusSign("+"), UnsignedInteger("1") };
-    value lexicalUnits = ["var", "=", "+", "1"];
+    value lexicalUnitsWithMatchingToken = {
+        ["var", Variable("var")],
+        ["=", EqualsSign("=")],
+        ["+", PlusSign("+")],
+        ["1", UnsignedInteger("1")],
+        ["!", Unknown("!")]
+    };
 
     // when
-    {Token+} tokens = lexicalUnits.map(Token.asToken);
+    value tokenPairs = lexicalUnitsWithMatchingToken.map((tuple) {
+        value [lexicalUnit, token] = tuple;
+        return [Token.asToken(lexicalUnit), token];
+    });
 
     // then
-    assert (tokens.containsEvery(expected));
+    tokenPairs.each(([Token, Token] pair) {
+        value [actual, expected] = pair;
+
+        "Lexical unit not matching token "
+        assert (actual == expected);
+    });
 }

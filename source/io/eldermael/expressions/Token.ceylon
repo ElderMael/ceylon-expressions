@@ -180,8 +180,7 @@ shared class Unknown(String lexicalUnit) extends Token(lexicalUnit) {
     }
 
     shared actual Integer hash => lexicalUnit.hash;
-
-
+    
 }
 
 shared {Token*} asPostfix({Token*} infix) {

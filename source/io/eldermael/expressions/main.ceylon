@@ -40,7 +40,9 @@ shared void run() {
 
             value fileLines = lines(file);
 
-            value context = evaluateEquations(fileLines);
+            value tokens = parse(fileLines);
+
+            value context = buildEquationsFrom(tokens);
 
             value output = generateOutputFrom(context);
 
@@ -77,9 +79,7 @@ shared String? generateOutputFrom(EquationContext context) {
 }
 
 
-shared EquationContext evaluateEquations(String[] equations) {
-
-    value tokens = parse(equations);
+shared EquationContext buildEquationsFrom({{Token+}+} tokens) {
 
     value initialContext = HashMap<String, Expression>();
 

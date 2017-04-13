@@ -61,7 +61,9 @@ shared class PlusSign extends Token satisfies Operator {
 
     shared static Boolean canBeBuiltFrom(String lexicalUnit) => lexicalUnit == "+";
 
-    shared new (String lexicalUnit) extends Token() {}
+    shared new (String lexicalUnit) extends Token() {
+        assert (lexicalUnit == "+");
+    }
 
     shared actual Integer precedence => 4;
 
@@ -87,7 +89,7 @@ shared class EqualsSign extends Token satisfies Operator {
 
     shared new (String lexicalUnit) extends Token() {}
 
-    shared actual Integer precedence => 14;
+    shared actual Integer precedence => 14; // From Wikipedia as in C
 
     string => "Equals(=)";
 

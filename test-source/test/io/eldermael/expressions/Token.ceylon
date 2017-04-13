@@ -9,27 +9,16 @@ import io.eldermael.expressions {
 test
 shared void shouldReturnProperToken() {
     // given
-    value lexicalUnitsWithMatchingToken = {
-        ["var", Variable("var")],
-        ["=", EqualsSign("=")],
-        ["+", PlusSign("+")],
-        ["1", UnsignedInteger("1")],
-        ["!", Unknown("!")]
+    value lexicalUnits = { "var", "=", "+", "1", "!" };
+    value expected = { Variable("var"), EqualsSign("="), PlusSign("+"),
+        UnsignedInteger("1"), Unknown("!")
     };
 
     // when
-    value tokenPairs = lexicalUnitsWithMatchingToken.map((tuple) {
-        value [lexicalUnit, token] = tuple;
-        return [Token.asToken(lexicalUnit), token];
-    });
+    value actual = lexicalUnits.map(Token.asToken);
 
     // then
-    tokenPairs.each(([Token, Token] pair) {
-        value [actual, expected] = pair;
-
-        "Lexical unit not matching token"
-        assert (actual == expected);
-    });
+    assertStreamsAreEqual(actual, expected);
 }
 
 test
@@ -44,9 +33,61 @@ shared void shouldParseCompleteLine() {
     value actualTokens = parse(lines).first;
 
     // then
-    zipPairs(actualTokens, expectedTokens).each((element) {
-        value [actual, expected] = element;
+    assertStreamsAreEqual(actualTokens, expectedTokens);
+
+}
+
+test
+shared void shouldReturnTokensAsPostfixNotation() {
+    // given
+    value infix = { UnsignedInteger("1"), PlusSign("+"), UnsignedInteger("1") };
+    value expectedPostfix = { UnsignedInteger("1"), UnsignedInteger("1"), PlusSign("+") };
+
+    // when
+    value postfix = asPostfix(infix);
+
+    // then
+    assertStreamsAreEqual(postfix, expectedPostfix);
+}
+
+test
+shared void shouldReturnSingleTokenIfInfixHasOnlyOneOperand() {
+    // given
+    value expected = UnsignedInteger("1");
+
+    // when
+    value postfix = asPostfix({ expected });
+
+    // then
+    assert (postfix.size == 1);
+    value actual = postfix.first;
+    assert (exists actual);
+    assert (actual == expected);
+}
+
+test
+shared void shouldReturnEmptyStreamWhenProvidedAnEmptyStream() {
+    // when
+    value postfix = asPostfix({});
+
+    // then
+    assert (postfix.empty);
+}
+
+void assertStreamsAreEqual({Identifiable*} actualStream, {Identifiable*} expectedStream) {
+
+    // This is because with ceylon.language.zipPairs:
+    // "The length of the resulting stream is the length of
+    // the shorter of the two given streams."
+
+    "Streams have different sizes"
+    assert (actualStream.size == expectedStream.size);
+
+    zipPairs(actualStream, expectedStream)
+        .each(([Identifiable, Identifiable] pair) {
+        value [actual, expected] = pair;
+
+        "Lexical unit not matching token"
         assert (actual == expected);
     });
-
 }

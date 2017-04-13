@@ -77,8 +77,10 @@ shared abstract class Expression()  of Sum | Number | Var {
 }
 
 shared class Number(shared Integer number) extends Expression() {
-    string => number.string;
 
+    assert (number>=0);
+
+    string => number.string;
 
     shared actual Boolean equals(Object that) {
         if (is Number that) {

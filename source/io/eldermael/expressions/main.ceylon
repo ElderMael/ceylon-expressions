@@ -40,9 +40,9 @@ shared void run() {
 
             value fileLines = lines(file);
 
-            value tokens = parse(fileLines);
+            value tokensPerLine = parse(fileLines);
 
-            value context = buildEquationsFrom(tokens);
+            value context = buildEquationsFrom(tokensPerLine);
 
             value output = generateOutputFrom(context);
 

@@ -2,7 +2,7 @@ import ceylon.collection {
     LinkedList
 }
 
-{{Token+}+} parse(String[] fileLines) {
+shared {{Token+}+} parse(String[] fileLines) {
 
     "File must contain expressions"
     assert (nonempty fileLines);
@@ -180,7 +180,7 @@ shared class Unknown(String lexicalUnit) extends Token(lexicalUnit) {
     }
 
     shared actual Integer hash => lexicalUnit.hash;
-    
+
 }
 
 shared {Token*} asPostfix({Token*} infix) {

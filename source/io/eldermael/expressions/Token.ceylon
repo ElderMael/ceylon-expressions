@@ -14,8 +14,15 @@ shared {{Token+}+} parse(String[] fileLines) {
     return equations;
 }
 
+"A tuple containing a predicate that signals if the string can be converted to
+ a Token and containing a factory function for such token."
 alias TokenStrategy => [Boolean(String), Token(String)];
 
+"Tokens represent atomic parsing elements in [[Equation]]s and [[Expression]]s.
+
+ These represent the plus sign, equals sign, variables, unsigned integers. There
+ is also a special token [[Unknown]] that represents a token that could not fit a
+ category."
 shared abstract class Token of PlusSign | EqualsSign | Variable | UnsignedInteger | Unknown {
 
     static {TokenStrategy+} tokenStrategies = {
@@ -46,8 +53,17 @@ shared abstract class Token of PlusSign | EqualsSign | Variable | UnsignedIntege
 
 }
 
+"An interface that represents operations applied to operands.
+
+ It contains the notion of precedence to represent the order/convention
+ used to evaluate a [[Expression]].
+
+ See Order of operations: https://en.wikipedia.org/wiki/Order_of_operations#Programming_languages
+
+ "
 shared interface Operator {
 
+    "The precedence of this operator represented as a numeric value."
     shared formal Integer precedence;
 
     shared Boolean hasHigherPrecedence(Operator operatorB) {
@@ -185,6 +201,12 @@ shared class Unknown(String lexicalUnit) extends Token() {
 
 }
 
+"Simplified implementation of Shunting-yard algorithm by Dijkstra to create
+ postfix notation ordered collection of [[Token]]s.
+
+
+ See: https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+ "
 shared {Token*} asPostfix({Token*} infix) {
 
 

@@ -19,7 +19,12 @@ String usage = """
                   Usage: expression file
                   """;
 
+
+"An Equation is a tuple that contains a variable name along an expression"
 shared alias Equation => [String, Expression];
+
+"An Equation context is a map which entries keys are variable names and
+ the values are expressions."
 shared alias EquationContext => HashMap<String, Expression>;
 
 shared void run() {
@@ -66,7 +71,8 @@ shared void run() {
 
 shared String? generateOutputFrom(EquationContext context) {
 
-    value outputs = context.keys.sort(byIncreasing(String.string)).map((String variableName) {
+    value outputs = context.keys
+        .sort(byIncreasing(String.string)).map((String variableName) {
 
         value result = context.get(variableName);
 
@@ -81,7 +87,8 @@ shared String? generateOutputFrom(EquationContext context) {
     return outputs.reduce(plus);
 }
 
-
+"Creates an [[EquationContext]] from a bidimensional stream of tokens
+ representing equations."
 shared EquationContext buildEquationsFrom({{Token+}+} tokens) {
 
     value initialContext = HashMap<String, Expression>();
@@ -94,8 +101,9 @@ shared EquationContext buildEquationsFrom({{Token+}+} tokens) {
 
 }
 
+"Reducer for adding an equation to a partial context."
 shared EquationContext intoContext(EquationContext partialContext,
-        [String, Expression] equation) {
+        Equation equation) {
     value [lhs, rhs] = equation;
 
     partialContext.put(lhs, rhs);

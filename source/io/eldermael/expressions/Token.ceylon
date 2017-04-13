@@ -41,10 +41,7 @@ shared abstract class Token of PlusSign | EqualsSign | Variable | UnsignedIntege
         return Unknown(lexicalUnit);
     }
 
-    shared String lexicalUnit;
-
-    shared new (String lexicalUnit) {
-        this.lexicalUnit = lexicalUnit;
+    shared new () {
     }
 
 }
@@ -64,7 +61,7 @@ shared class PlusSign extends Token satisfies Operator {
 
     shared static Boolean canBeBuiltFrom(String lexicalUnit) => lexicalUnit == "+";
 
-    shared new (String lexicalUnit) extends Token(lexicalUnit) {}
+    shared new (String lexicalUnit) extends Token() {}
 
     shared actual Integer precedence => 4;
 
@@ -88,7 +85,7 @@ shared class EqualsSign extends Token satisfies Operator {
 
     shared static Boolean canBeBuiltFrom(String lexicalUnit) => lexicalUnit == "=";
 
-    shared new (String lexicalUnit) extends Token(lexicalUnit) {}
+    shared new (String lexicalUnit) extends Token() {}
 
     shared actual Integer precedence => 14;
 
@@ -115,7 +112,7 @@ shared class UnsignedInteger extends Token {
 
     shared Integer val;
 
-    shared new (String lexicalUnit) extends Token(lexicalUnit) {
+    shared new (String lexicalUnit) extends Token() {
 
         assert (is Integer val = Integer.parse(lexicalUnit));
 
@@ -147,7 +144,7 @@ shared class Variable extends Token {
     shared String name;
 
     shared new (String name)
-            extends Token(name) {
+            extends Token() {
         this.name = name;
     }
 
@@ -166,7 +163,7 @@ shared class Variable extends Token {
 
 }
 
-shared class Unknown(String lexicalUnit) extends Token(lexicalUnit) {
+shared class Unknown(String lexicalUnit) extends Token() {
 
     string => "Unknown(``lexicalUnit``)";
 

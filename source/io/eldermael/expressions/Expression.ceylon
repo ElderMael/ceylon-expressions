@@ -119,6 +119,9 @@ shared class Sum(shared Expression left, shared Expression right) extends Expres
 }
 
 shared class Var(shared String name) extends Expression() {
+
+    assert (!name.empty);
+
     string => this.name;
 
     shared actual Boolean equals(Object that) {

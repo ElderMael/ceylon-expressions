@@ -2,6 +2,10 @@ import ceylon.collection {
     LinkedList
 }
 
+"Factory function to create [[Expression]]s from a stream of [[Token]]s.
+
+ First it takes the tokens in infix notation and converts them to postfix notation so we can
+ evaluate the Expression in the required precedence of operators."
 shared Expression buildExpressionFrom({Token*} rhs) {
 
     value postfix = asPostfix(rhs);
@@ -45,11 +49,18 @@ shared Expression buildExpressionFrom({Token*} rhs) {
 
 }
 
-shared abstract class Expression()  of Sum | Number | Var {
+"""This class represents a finite combination of numbers, operators and variables
+   well-formed and that can be evaluated depending on a context that contains references
+   to other expressions.
+   """
+shared abstract class Expression() of Sum | Number | Var {
 
     shared variable Integer? cachedResult = null;
 
-    shared Integer eval(Map<String, Expression> context) {
+    """This method evaluates the [[Expression]] using the given context by determining
+       its type. If the result is resolvable, it is cached for future computations.
+       """
+    shared Integer eval(EquationContext context) {
 
         if (exists result = cachedResult) {
             return result;
@@ -76,6 +87,7 @@ shared abstract class Expression()  of Sum | Number | Var {
 
 }
 
+"An expression that evaluates to its given integer numeral."
 shared class Number(shared Integer number) extends Expression() {
 
     assert (number>=0);
@@ -95,6 +107,7 @@ shared class Number(shared Integer number) extends Expression() {
 
 }
 
+"An expression that represents the sum of two expressions."
 shared class Sum(shared Expression left, shared Expression right) extends Expression() {
 
     string => "``left.string`` + ``right.string``";
@@ -118,6 +131,7 @@ shared class Sum(shared Expression left, shared Expression right) extends Expres
 
 }
 
+"A context-dependant expression that evaluates to another expression within the context."
 shared class Var(shared String name) extends Expression() {
 
     assert (!name.empty);

@@ -140,8 +140,9 @@ shared class UnsignedInteger extends Token {
 
 shared class Variable extends Token {
 
-    shared static Boolean canBeBuiltFrom(String lexicalUnit) =>
-            lexicalUnit.every(Character.letter);
+    shared static Boolean canBeBuiltFrom(String lexicalUnit) {
+        return lexicalUnit.every(Character.letter) && !lexicalUnit.empty;
+    }
 
     shared String name;
 
@@ -166,6 +167,8 @@ shared class Variable extends Token {
 }
 
 shared class Unknown(String lexicalUnit) extends Token() {
+
+    assert (!lexicalUnit.empty);
 
     string => "Unknown(``lexicalUnit``)";
 

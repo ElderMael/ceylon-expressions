@@ -102,6 +102,3 @@ shared void shouldEvaluateSumToTheSumOfLeftAndRightExpressions() {
     assert (val == 3);
 }
 
-test
-shared void should() {
-}

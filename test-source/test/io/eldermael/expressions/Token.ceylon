@@ -74,3 +74,33 @@ shared void shouldReturnEmptyStreamWhenProvidedAnEmptyStream() {
     assert (postfix.empty);
 }
 
+test
+shared void shouldRejectNotAllowedStrings() {
+    
+    assert (Variable.canBeBuiltFrom("var"));
+    assert (!Variable.canBeBuiltFrom(""));
+    assert (!Variable.canBeBuiltFrom("var1"));
+    assert (!Variable.canBeBuiltFrom("123"));
+    assert (!Variable.canBeBuiltFrom("chars    "));
+    assert (!Variable.canBeBuiltFrom(" 123 vars"));
+
+    assert (EqualsSign.canBeBuiltFrom("="));
+    assert (!EqualsSign.canBeBuiltFrom("+"));
+    assert (!EqualsSign.canBeBuiltFrom("a"));
+    assert (!EqualsSign.canBeBuiltFrom("+="));
+
+    assert (PlusSign.canBeBuiltFrom("+"));
+    assert (!PlusSign.canBeBuiltFrom("="));
+    assert (!PlusSign.canBeBuiltFrom("++"));
+    assert (!PlusSign.canBeBuiltFrom("a"));
+    assert (!PlusSign.canBeBuiltFrom("1"));
+
+    assert (UnsignedInteger.canBeBuiltFrom("1"));
+    assert (!UnsignedInteger.canBeBuiltFrom("/"));
+    assert (!UnsignedInteger.canBeBuiltFrom("3b"));
+    assert (!UnsignedInteger.canBeBuiltFrom("="));
+    assert (!UnsignedInteger.canBeBuiltFrom("+"));
+
+
+}
+

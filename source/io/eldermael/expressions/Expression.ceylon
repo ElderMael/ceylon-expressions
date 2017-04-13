@@ -16,7 +16,7 @@ shared Expression buildExpressionFrom({Token*} rhs) {
             partial.push(Var(token.name));
         }
         case (is UnsignedInteger) {
-            partial.push(Literal(token.val));
+            partial.push(Number(token.val));
         }
         case (is PlusSign) {
             value right = partial.pop();
@@ -45,7 +45,7 @@ shared Expression buildExpressionFrom({Token*} rhs) {
 
 }
 
-shared abstract class Expression() of Sum | Literal | Var {
+shared abstract class Expression()  of Sum | Number | Var {
 
     shared variable Integer? cachedResult = null;
 
@@ -56,7 +56,7 @@ shared abstract class Expression() of Sum | Literal | Var {
         }
 
         switch (expression = this)
-        case (is Literal) {
+        case (is Number) {
             return this.cachedResult = expression.number;
         }
         case (is Sum) {
@@ -76,12 +76,12 @@ shared abstract class Expression() of Sum | Literal | Var {
 
 }
 
-shared class Literal(shared Integer number) extends Expression() {
+shared class Number(shared Integer number) extends Expression() {
     string => number.string;
 
 
     shared actual Boolean equals(Object that) {
-        if (is Literal that) {
+        if (is Number that) {
             return number == that.number;
         }
 
@@ -94,6 +94,7 @@ shared class Literal(shared Integer number) extends Expression() {
 }
 
 shared class Sum(shared Expression left, shared Expression right) extends Expression() {
+
     string => "``left.string`` + ``right.string``";
 
     shared actual Boolean equals(Object that) {

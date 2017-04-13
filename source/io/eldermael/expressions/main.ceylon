@@ -49,14 +49,17 @@ shared void run() {
             exitProcessWith(successExitCode, output);
         }
         case (is Directory) {
-            exitProcessWith(pathIsDirectoryExitCode, "``file.string``: is a Directory ");
+            exitProcessWith(pathIsDirectoryExitCode,
+                "``file.string``: is a Directory ");
         }
         case (is Nil) {
-            exitProcessWith(fileDoesNotExistsExitCode, "``file.string``: no such file.");
+            exitProcessWith(fileDoesNotExistsExitCode,
+                "``file.string``: no such file.");
         }
 
     } catch (Exception|AssertionError error) {
-        exitProcessWith(unknownErrorExitCode, "Error: ``error.message``");
+        exitProcessWith(unknownErrorExitCode,
+            "Error: ``error.message``");
     }
 
 }

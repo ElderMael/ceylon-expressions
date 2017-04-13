@@ -76,7 +76,7 @@ shared void shouldReturnEmptyStreamWhenProvidedAnEmptyStream() {
 
 test
 shared void shouldRejectNotAllowedStrings() {
-    
+
     assert (Variable.canBeBuiltFrom("var"));
     assert (!Variable.canBeBuiltFrom(""));
     assert (!Variable.canBeBuiltFrom("var1"));
@@ -88,18 +88,21 @@ shared void shouldRejectNotAllowedStrings() {
     assert (!EqualsSign.canBeBuiltFrom("+"));
     assert (!EqualsSign.canBeBuiltFrom("a"));
     assert (!EqualsSign.canBeBuiltFrom("+="));
+    assert (!EqualsSign.canBeBuiltFrom(" "));
 
     assert (PlusSign.canBeBuiltFrom("+"));
     assert (!PlusSign.canBeBuiltFrom("="));
     assert (!PlusSign.canBeBuiltFrom("++"));
     assert (!PlusSign.canBeBuiltFrom("a"));
     assert (!PlusSign.canBeBuiltFrom("1"));
+    assert (!PlusSign.canBeBuiltFrom(" "));
 
     assert (UnsignedInteger.canBeBuiltFrom("1"));
     assert (!UnsignedInteger.canBeBuiltFrom("/"));
     assert (!UnsignedInteger.canBeBuiltFrom("3b"));
     assert (!UnsignedInteger.canBeBuiltFrom("="));
     assert (!UnsignedInteger.canBeBuiltFrom("+"));
+    assert (!UnsignedInteger.canBeBuiltFrom(" "));
 
 
 }

@@ -26,7 +26,7 @@ shared Expression buildExpressionFrom({Token*} rhs) {
             value right = partial.pop();
             value left = partial.pop();
 
-            "Operand missing"
+            "Operand missing in RHS ``rhs.string``"
             assert (exists left, exists right);
 
             partial.push(Sum(left, right));

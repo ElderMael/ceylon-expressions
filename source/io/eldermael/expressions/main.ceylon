@@ -130,7 +130,8 @@ suppressWarnings ("expressionTypeNothing")
 shared void exitProcessWith(Integer exitCode, String? message = null) {
 
     if (exists message) {
-        print(message);
+        value trim = message.trim(Character.whitespace);
+        print(trim);
     }
 
     process.exit(exitCode);

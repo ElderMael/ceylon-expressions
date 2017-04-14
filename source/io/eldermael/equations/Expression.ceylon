@@ -53,7 +53,7 @@ shared Expression buildExpressionFrom({Token*} rhs) {
    well-formed and that can be evaluated depending on a context that contains references
    to other expressions.
 
-   Expression can be seen as an Abstract Syntax Tree that contains Leafs (Number), sub-trees
+   Expression can be seen as an Abstract Syntax Tree that contains Leafs (Number), nodes
    (Sum) and references to other trees (Var).
    """
 shared abstract class Expression() of Sum | Number | Var {

@@ -6,7 +6,7 @@ import ceylon.test {
     assertThatException
 }
 
-import io.eldermael.expressions {
+import io.eldermael.equations {
     ...
 }
 

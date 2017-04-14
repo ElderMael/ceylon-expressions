@@ -2,7 +2,7 @@ import ceylon.test {
     test
 }
 
-import io.eldermael.expressions {
+import io.eldermael.equations {
     ...
 }
 

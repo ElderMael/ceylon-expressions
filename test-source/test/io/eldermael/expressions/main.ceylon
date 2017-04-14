@@ -48,3 +48,34 @@ shared void shouldThrowExceptionIfTokenSequenceIsInvalid() {
     // when
     assertException.hasType(`AssertionError`);
 }
+
+test
+shared void shouldReduceOutputToSingleStringSorted() {
+    // given
+    value context = HashMap<String, Expression>();
+    context.put("a", Number(1));
+    context.put("b", Number(2));
+    context.put("z", Number(3));
+    value expected = """a = 1
+                        b = 2
+                        z = 3
+                        """;
+
+    // when
+    value actual = generateOutputFrom(context);
+
+    // then
+    assert (exists actual);
+    assert (actual == expected);
+}
+
+shared void shouldReturnNullIfContextIsEmpty() {
+    // given
+    value context = HashMap<String, Expression>();
+
+    // when
+    value actual = generateOutputFrom(context);
+
+    // then
+    assert (!exists actual);
+}

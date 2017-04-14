@@ -27,8 +27,3 @@ offset = 7
 origin = 8
 random = 2
 ```
-
-## Notes
-
-
-

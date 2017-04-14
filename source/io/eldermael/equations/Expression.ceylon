@@ -52,6 +52,9 @@ shared Expression buildExpressionFrom({Token*} rhs) {
 """This class represents a finite combination of numbers, operators and variables
    well-formed and that can be evaluated depending on a context that contains references
    to other expressions.
+
+   Expression can be seen as an Abstract Syntax Tree that contains Leafs (Number), sub-trees
+   (Sum) and references to other trees (Var).
    """
 shared abstract class Expression() of Sum | Number | Var {
 

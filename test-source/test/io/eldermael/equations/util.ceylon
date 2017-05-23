@@ -11,7 +11,7 @@ void assertStreamsAreEqual({Identifiable*} actualStream, {Identifiable*} expecte
         .each(([Identifiable, Identifiable] pair) {
         value [actual, expected] = pair;
 
-        "Lexical unit not matching token"
+        "Actual '``actual``' is different from expected '``expected``'"
         assert (actual == expected);
     });
 }
